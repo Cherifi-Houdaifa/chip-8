@@ -21,6 +21,7 @@ struct chip8
     uint8_t dt; // delay timer
     uint8_t st; // sound timer
     uint64_t display[0x20];
+    bool keyboad[0x10];
 };
 
 struct ssdl {
@@ -37,3 +38,6 @@ void dodisplay (SDL_Renderer* rend, uint64_t display[0x20]);
 void drawpixel(SDL_Renderer* rend, int x, int y);
 uint16_t fetch(struct chip8* cpu);
 void execute(struct chip8* cpu);
+void handleeventssdl(struct ssdl* psdl, bool keyboad[0x10]);
+uint8_t waitforkey(struct ssdl* psdl);
+void timerz(struct chip8* cpu);

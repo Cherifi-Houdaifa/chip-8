@@ -30,14 +30,75 @@ void destroysdl(struct ssdl* psdl) {
 }
 
 void updatesdl(struct ssdl* psdl, uint64_t display[0x20]) {
-    SDL_SetRenderDrawColor(psdl->rend, 0x0, 0x0, 0x0, 0xff);
+    SDL_SetRenderDrawColor(psdl->rend, 0x2b, 0x2b, 0x2b, 0xff);
     SDL_RenderClear(psdl->rend);
-    SDL_SetRenderDrawColor(psdl->rend, 0xff, 0xff, 0xff, 0xff);
+    SDL_SetRenderDrawColor(psdl->rend, 0x8c, 0xbf, 0x26, 0xff);
 
     dodisplay(psdl->rend, display);
     
     SDL_RenderPresent(psdl->rend);
     SDL_Delay(1000/fps);
+}
+
+void handleeventssdl(struct ssdl* psdl, bool keyboad[0x10]){
+    while (SDL_PollEvent(&(psdl->event))) {
+        if (psdl->event.type == SDL_QUIT) {
+            destroysdl(psdl);
+            exit(1);
+        } else if (psdl->event.type == SDL_KEYDOWN) {
+            switch (psdl->event.key.keysym.scancode)
+            {
+                case SDL_SCANCODE_0:
+                    keyboad[0x0] = true;
+                    break;
+                case SDL_SCANCODE_1:
+                    keyboad[0x1] = true;
+                    break;
+                case SDL_SCANCODE_2:
+                    keyboad[0x2] = true;
+                    break;
+                case SDL_SCANCODE_3:
+                    keyboad[0x3] = true;
+                    break;
+            }
+        } else if (psdl->event.type == SDL_KEYUP) {
+            switch (psdl->event.key.keysym.scancode)
+            {
+                case SDL_SCANCODE_0:
+                    keyboad[0x0] = false;
+                    break;
+                case SDL_SCANCODE_1:
+                    keyboad[0x1] = false;
+                    break;
+                case SDL_SCANCODE_2:
+                    keyboad[0x2] = false;
+                    break;
+                case SDL_SCANCODE_3:
+                    keyboad[0x3] = false;
+                    break;
+            }
+        }
+    }
+}
+
+uint8_t waitforkey(struct ssdl* psdl) {
+    while (true) {
+        while (SDL_PollEvent(&(psdl->event))) {
+            if (psdl->event.type == SDL_KEYDOWN) {
+                switch (psdl->event.key.keysym.scancode)
+                {
+                    case SDL_SCANCODE_0:
+                        return 0x0;
+                    case SDL_SCANCODE_1:
+                        return 0x1;
+                    case SDL_SCANCODE_2:
+                        return 0x2;
+                    case SDL_SCANCODE_3:
+                        return 0x3;
+                }
+            }
+        }
+    }
 }
 
 void dodisplay (SDL_Renderer* rend, uint64_t display[0x20]) {

@@ -10,15 +10,9 @@ int main(int argc, char* args[]) {
 	initchip8(&cpu);
 	initsdl(&sdl);
 	while (1) {
-		while (SDL_PollEvent(&(sdl.event))) {
-            if (sdl.event.type == SDL_QUIT) {
-				destroysdl(&sdl);
-                exit(1);
-            }
-        }
-		// for (int i = 0; i < 0x20; i++)
-			// printf("%ld\n", cpu->display[i]);
+		handleeventssdl(&sdl, cpu->keyboad);
 		
+		timerz(cpu);
 		execute(cpu);
 
 		updatesdl(&sdl, cpu->display);
@@ -32,17 +26,24 @@ void initchip8 (struct chip8** pcpu) {
 	struct chip8* cpu = *pcpu;
 	cpu->pc = 0x200;
 
-	// set the fonts in memory (from address 0x0 to address 0x80)
-	cpu->mem[0x0] = 0xf0;
-	cpu->mem[0x1] = 0x90;
-	cpu->mem[0x2] = 0x90;
-	cpu->mem[0x3] = 0x90;
-	cpu->mem[0x4] = 0xf0;
+	// set the fonts in memory
+	#include "fonts" // the c preprocessor is the best
 
-	FILE* fd = fopen("./tests/chip8-logo.ch8", "r");
-	fread(cpu->mem+0x200, 0x1, 0x200, fd);
+	
 
 
+}
+
+void timerz(struct chip8* cpu) {
+	if (cpu->dt > 0) {
+		cpu->dt = cpu->dt - 1;
+	}
+
+	if (cpu->st > 0) {
+		// do beep
+		puts("beep");
+		cpu->st = cpu->st - 1;
+	}
 }
 
 
@@ -101,7 +102,7 @@ void execute(struct chip8* cpu) {
 	kk = (instruction & 0xff);
 	n = (instruction & 0xf);
 	nnn = (instruction & 0xfff);
-	// printf("%x\n", instruction);
+
 	// parse and execute instructions here (probably should seperate them)
 	if ((instruction & 0xf000) == 0x0000) {
 		// ignored
@@ -197,7 +198,6 @@ void execute(struct chip8* cpu) {
 	} else if ((instruction & 0xf000) == 0xa000) {
 		// LD I
 		cpu->i = nnn;
-		// printf("i: %x\n", cpu->i);
 	} else if ((instruction & 0xf000) == 0xb000) {
 		// JP v0, nnn
 		cpu->pc = cpu->vn[0x0] + nnn;
@@ -208,7 +208,7 @@ void execute(struct chip8* cpu) {
 		// DRW vx, vy, n
 		
 		uint8_t* sprite = malloc(n * sizeof(uint8_t));
-
+		uint8_t flag = 0;
 		// read sprite
 		for (int j = 0; j < n; j++) {
 			sprite[j] = cpu->mem[cpu->i + j];
@@ -216,11 +216,58 @@ void execute(struct chip8* cpu) {
 
 		for (int j = 0; j < n; j++) {
 			uint64_t mask = (uint64_t)revtable[sprite[j]];
-			mask = mask << cpu->vn[x];
+			mask = (mask << cpu->vn[x]) | (mask >> (64 - cpu->vn[x]));
+			if (mask & (cpu->display[(cpu->vn[y] + j) % 0x20]))
+				flag = 1;
 			cpu->display[(cpu->vn[y] + j) % 0x20] = cpu->display[(cpu->vn[y] + j) % 0x20] ^ mask;
+			
 		}
-
+		cpu->vn[0xf] = flag;
 		free(sprite);
+	} else if ((instruction & 0xf0ff) == 0xe09e) {
+		// SKP
+		if (cpu->keyboad[x])
+			cpu->pc = cpu->pc + 2;
+	} else if ((instruction & 0xf0ff) == 0xe0a1) {
+		// SKNP
+		if (!cpu->keyboad[x])
+			cpu->pc = cpu->pc + 2;
+	} else if ((instruction & 0xf0ff) == 0xf007) {
+		// LD vx, dt
+		cpu->vn[x] = cpu->dt;
+	} else if ((instruction & 0xf0ff) == 0xf00a) {
+		// LD vx, K
+		cpu->vn[x] = waitforkey(&sdl);
+	} else if ((instruction & 0xf0ff) == 0xf015) {
+		// LD dt, vx
+		cpu->dt = cpu->vn[x];
+	} else if ((instruction & 0xf0ff) == 0xf018) {
+		// LD st, vx
+		cpu->st = cpu->vn[x];
+	} else if ((instruction & 0xf0ff) == 0xf01e) {
+		// ADD i, vx
+		cpu->i = cpu->i + cpu->vn[x];
+	} else if ((instruction & 0xf0ff) == 0xf029) {
+		// LD f, vx
+		cpu->i = cpu->vn[x] * 0x5;
+	} else if ((instruction & 0xf0ff) == 0xf033) {
+		// LD B, vx
+		uint8_t h, t, o; // hundreds, tens and ones
+		h = cpu->vn[x] / 100;
+		t = cpu->vn[x] / 10 - (h * 10);
+		o = cpu->vn[x] - (t * 10) - (h * 100);
+		cpu->mem[cpu->i] = h;
+		cpu->mem[cpu->i + 1] = t;
+		cpu->mem[cpu->i + 2] = o;
+	} else if ((instruction & 0xf0ff) == 0xf055) {
+		// LD [i], vx
+		for (int j = 0; j <= x; j++) {
+			cpu->mem[cpu->i + j] = cpu->vn[j];
+		}
+	} else if ((instruction & 0xf0ff) == 0xf065) {
+		// LD vx, [i]
+		for (int j = 0; j <= x; j++) {
+			cpu->vn[j] = cpu->mem[cpu->i + j];
+		}
 	}
 }
-
