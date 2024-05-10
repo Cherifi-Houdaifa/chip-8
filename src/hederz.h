@@ -2,9 +2,13 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-#define SCREEN_WIDTH 64
-#define SCREEN_HEIGHT 32
+#define pixelsize 0xa
+#define width (64 * pixelsize)
+#define height (32 * pixelsize)
+#define fps 60
+
 
 struct chip8
 {
@@ -16,6 +20,20 @@ struct chip8
     uint16_t stack[0x10];
     uint8_t dt; // delay timer
     uint8_t st; // sound timer
-    uint8_t display[8][0x20];
+    uint64_t display[0x20];
 };
 
+struct ssdl {
+    SDL_Window* window;
+    SDL_Renderer* rend;
+    SDL_Event event;
+};
+
+void initchip8 (struct chip8** cpu);
+void initsdl(struct ssdl* psdl);
+void destroysdl(struct ssdl* psdl);
+void updatesdl(struct ssdl* psdl, uint64_t display[0x20]);
+void dodisplay (SDL_Renderer* rend, uint64_t display[0x20]);
+void drawpixel(SDL_Renderer* rend, int x, int y);
+uint16_t fetch(struct chip8* cpu);
+void execute(struct chip8* cpu);
