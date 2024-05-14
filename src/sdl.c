@@ -60,6 +60,43 @@ void handleeventssdl(struct ssdl* psdl, bool keyboad[0x10]){
                 case SDL_SCANCODE_3:
                     keyboad[0x3] = true;
                     break;
+                case SDL_SCANCODE_4:
+                    keyboad[0x4] = true;
+                    break;
+                case SDL_SCANCODE_5:
+                    keyboad[0x5] = true;
+                    break;
+                case SDL_SCANCODE_6:
+                    keyboad[0x6] = true;
+                    break;
+                case SDL_SCANCODE_7:
+                    keyboad[0x7] = true;
+                    break;
+                case SDL_SCANCODE_8:
+                    keyboad[0x8] = true;
+                    break;
+                case SDL_SCANCODE_9:
+                    keyboad[0x9] = true;
+                    break;
+                case SDL_SCANCODE_A:
+                    keyboad[0xa] = true;
+                    break;
+                case SDL_SCANCODE_B:
+                    keyboad[0xb] = true;
+                    break;
+                case SDL_SCANCODE_C:
+                    keyboad[0xc] = true;
+                    break;
+                case SDL_SCANCODE_D:
+                    keyboad[0xd] = true;
+                    break;
+                case SDL_SCANCODE_E:
+                    keyboad[0xe] = true;
+                    break;
+                case SDL_SCANCODE_F:
+                    keyboad[0xf] = true;
+                    break;
+
             }
         } else if (psdl->event.type == SDL_KEYUP) {
             switch (psdl->event.key.keysym.scancode)
@@ -75,6 +112,42 @@ void handleeventssdl(struct ssdl* psdl, bool keyboad[0x10]){
                     break;
                 case SDL_SCANCODE_3:
                     keyboad[0x3] = false;
+                    break;
+                case SDL_SCANCODE_4:
+                    keyboad[0x4] = false;
+                    break;
+                case SDL_SCANCODE_5:
+                    keyboad[0x5] = false;
+                    break;
+                case SDL_SCANCODE_6:
+                    keyboad[0x6] = false;
+                    break;
+                case SDL_SCANCODE_7:
+                    keyboad[0x7] = false;
+                    break;
+                case SDL_SCANCODE_8:
+                    keyboad[0x8] = false;
+                    break;
+                case SDL_SCANCODE_9:
+                    keyboad[0x9] = false;
+                    break;
+                case SDL_SCANCODE_A:
+                    keyboad[0xa] = false;
+                    break;
+                case SDL_SCANCODE_B:
+                    keyboad[0xb] = false;
+                    break;
+                case SDL_SCANCODE_C:
+                    keyboad[0xc] = false;
+                    break;
+                case SDL_SCANCODE_D:
+                    keyboad[0xd] = false;
+                    break;
+                case SDL_SCANCODE_E:
+                    keyboad[0xe] = false;
+                    break;
+                case SDL_SCANCODE_F:
+                    keyboad[0xf] = false;
                     break;
             }
         }
@@ -95,6 +168,30 @@ uint8_t waitforkey(struct ssdl* psdl) {
                         return 0x2;
                     case SDL_SCANCODE_3:
                         return 0x3;
+                    case SDL_SCANCODE_4:
+                        return 0x4;
+                    case SDL_SCANCODE_5:
+                        return 0x5;
+                    case SDL_SCANCODE_6:
+                        return 0x6;
+                    case SDL_SCANCODE_7:
+                        return 0x7;
+                    case SDL_SCANCODE_8:
+                        return 0x8;
+                    case SDL_SCANCODE_9:
+                        return 0x9;
+                    case SDL_SCANCODE_A:
+                        return 0xa;
+                    case SDL_SCANCODE_B:
+                        return 0xb;
+                    case SDL_SCANCODE_C:
+                        return 0xc;
+                    case SDL_SCANCODE_D:
+                        return 0xd;
+                    case SDL_SCANCODE_E:
+                        return 0xe;
+                    case SDL_SCANCODE_F:
+                        return 0xf;
                 }
             }
         }

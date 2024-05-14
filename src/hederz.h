@@ -17,7 +17,7 @@ struct chip8
     uint16_t i;
     uint16_t pc;
     uint8_t sp;
-    uint16_t stack[0x10];
+    uint16_t stack[0x11];
     uint8_t dt; // delay timer
     uint8_t st; // sound timer
     uint64_t display[0x20];
@@ -30,14 +30,17 @@ struct ssdl {
     SDL_Event event;
 };
 
-void initchip8 (struct chip8** cpu);
-void initsdl(struct ssdl* psdl);
-void destroysdl(struct ssdl* psdl);
-void updatesdl(struct ssdl* psdl, uint64_t display[0x20]);
-void dodisplay (SDL_Renderer* rend, uint64_t display[0x20]);
-void drawpixel(SDL_Renderer* rend, int x, int y);
+// chip8 stuff
+void initchip8 (struct chip8** cpu, char* file);
 uint16_t fetch(struct chip8* cpu);
 void execute(struct chip8* cpu);
+void timerz(struct chip8* cpu);
+
+// sdl stuff
+void initsdl(struct ssdl* psdl);
+void updatesdl(struct ssdl* psdl, uint64_t display[0x20]);
+void destroysdl(struct ssdl* psdl);
+void dodisplay (SDL_Renderer* rend, uint64_t display[0x20]);
+void drawpixel(SDL_Renderer* rend, int x, int y);
 void handleeventssdl(struct ssdl* psdl, bool keyboad[0x10]);
 uint8_t waitforkey(struct ssdl* psdl);
-void timerz(struct chip8* cpu);
