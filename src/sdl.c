@@ -29,14 +29,17 @@ void destroysdl(struct ssdl* psdl) {
     SDL_Quit();
 }
 
-void updatesdl(struct ssdl* psdl, uint64_t display[0x20]) {
-    SDL_SetRenderDrawColor(psdl->rend, 0x2b, 0x2b, 0x2b, 0xff);
-    SDL_RenderClear(psdl->rend);
-    SDL_SetRenderDrawColor(psdl->rend, 0x8c, 0xbf, 0x26, 0xff);
+void updatesdl(struct ssdl* psdl, struct chip8* cpu) {
+    if (cpu->displaychanged){
+        SDL_SetRenderDrawColor(psdl->rend, 0x2b, 0x2b, 0x2b, 0xff);
+        SDL_RenderClear(psdl->rend);
+        SDL_SetRenderDrawColor(psdl->rend, 0x8c, 0xbf, 0x26, 0xff);
 
-    dodisplay(psdl->rend, display);
-    
-    SDL_RenderPresent(psdl->rend);
+        dodisplay(psdl->rend, cpu->display);
+        
+        SDL_RenderPresent(psdl->rend);
+        cpu->displaychanged = false;
+    }
     SDL_Delay(1000/fps);
 }
 

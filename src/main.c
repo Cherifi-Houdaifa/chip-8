@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 		timerz(cpu);
 		execute(cpu);
 
-		updatesdl(&sdl, cpu->display);
+		updatesdl(&sdl, cpu);
 	}
 
 	return 0;
@@ -24,6 +24,7 @@ void initchip8 (struct chip8** pcpu, char* file) {
 	*pcpu = calloc(1, sizeof(struct chip8));
 	struct chip8* cpu = *pcpu;
 	cpu->pc = 0x200;
+	cpu->displaychanged = false;
 
 	// set the fonts in memory
 	#include "fonts" // the c preprocessor is the best
@@ -243,6 +244,7 @@ void execute(struct chip8* cpu) {
 	} else if ((instruction & 0xf000) == 0xd000) {
 		// DRW vx, vy, n
 		// puts("DRW vx, vy, n");
+		cpu->displaychanged = true;
 		uint8_t* sprite = malloc(n * sizeof(uint8_t));
 		uint8_t flag = 0;
 		// read sprite
